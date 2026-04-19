@@ -24,9 +24,9 @@ int main ()
     int mat2[lin2][col2];
     matrix_read(lin2, col2, mat2);
 
-    int opcao = -1;
+    int opcao;
 
-    while (opcao != 6)
+    while (1)
     {
         printf("1 - Somar matrizes\n");
         printf("2 - Subtrair matrizes\n");
