@@ -53,3 +53,5 @@ dkms.conf
 Resultados/
 log.txt
 Resultado.csv
+
+*.txt
