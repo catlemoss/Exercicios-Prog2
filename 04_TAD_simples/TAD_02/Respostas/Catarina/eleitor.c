@@ -21,7 +21,7 @@ tEleitor LeEleitor()
 
     return e;
 }
-
+ 
 int ObtemVotoPresidente(tEleitor eleitor)
 {
     return eleitor.votoP;

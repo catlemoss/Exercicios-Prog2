@@ -22,4 +22,4 @@ int main ()
     ImprimeResultadoEleicao(eleicao);
 
     return 0;
-}
+} 

@@ -6,7 +6,7 @@
 tCandidato CriaCandidato(char *nome, char *partido, char cargo, int id)
 {
     tCandidato c;
-
+ 
     strcpy(c.nome, nome);
     strcpy(c.partido, partido); 
     c.cargo = cargo;

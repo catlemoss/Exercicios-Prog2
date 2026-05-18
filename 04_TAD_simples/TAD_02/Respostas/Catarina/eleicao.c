@@ -139,7 +139,7 @@ void ImprimeResultadoEleicao(tEleicao eleicao)
         printf("ELEICAO ANULADA\n");
         return;
     }
-
+ 
     int vencedorP = IndiceMaisVotado(eleicao.presidentes, eleicao.totalPresidentes);
     int vencedorG = IndiceMaisVotado(eleicao.governadores, eleicao.totalGovernadores);
 
