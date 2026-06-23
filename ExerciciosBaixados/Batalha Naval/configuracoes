@@ -1,0 +1,11 @@
+Arquivos
+	saida.txt=10
+Valgrind
+	desconto=0.0
+Validações
+	main=1.00
+    posicao=1.00
+    navio=1.50
+    grid=2.00
+	partida=3.00
+	completo=1.50
