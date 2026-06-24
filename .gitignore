@@ -58,3 +58,8 @@ Resultado.csv
 *.o
 *.vscode
 *.pdf
+
+# Executaveis compilados
+prog
+*.o
+*.out
