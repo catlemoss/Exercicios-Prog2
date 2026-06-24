@@ -60,6 +60,5 @@ Resultado.csv
 *.pdf
 
 # Executaveis compilados
-prog
 *.o
 *.out
