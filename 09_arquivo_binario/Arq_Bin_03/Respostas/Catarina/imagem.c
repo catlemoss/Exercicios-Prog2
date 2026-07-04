@@ -8,13 +8,13 @@
  */
 struct tImagem
 {
-    int altura;
-    int largura;
+    int linhas;
+    int colunas;
     int nBytes;
 
     Tipo tipoImg;
 
-    void *dado;
+    void *pixels;
 };
 
 /**
@@ -23,51 +23,65 @@ struct tImagem
  * @param path O caminho para o arquivo de imagem.
  * @return Um ponteiro para a imagem lida. Se houver erro (de leitura ou alocação de memória), a função imprime uma mensagem de erro e termina o programa.
  */
-
 Imagem *LerImagem(const char *caminho)
 {
     FILE *arq = fopen (caminho, "rb");
+    if (arq == NULL) return NULL;
 
-    if (arq == NULL)
-    {
-        printf("Erro na leitura do arquivo.\n");
-        exit(0);                            // serve para ver q o problema é a leitura do arq
-    }
-
-    Imagem *img = (Imagem *) malloc (sizeof (Imagem));
-
+    Imagem *img = malloc (sizeof (Imagem));
     if (img == NULL)
     {
-        printf("Erro ao alocar memoria.\n");
-        exit(1);
+        fclose(arq);
+        exit (1);
     }
 
     img->nBytes = 0;
+    img->pixels = NULL;
 
-    fread (&img->altura, sizeof (int), 1, arq);
-    img->nBytes += sizeof(int);
+    size_t lidos;
 
-    fread (&img->largura, sizeof (int), 1, arq);
-    img->nBytes += sizeof(int);
+    // Leia do arquivo 1 bloco do tamanho de um int e guarde dentro de img
+    lidos = fread(&img->linhas, sizeof(int), 1, arq);
+    img->nBytes += lidos * sizeof(int);
 
-    fread (&img->tipoImg, sizeof (int), 1, arq);
-    img->nBytes += sizeof(int);
+    lidos = fread(&img->colunas, sizeof(int), 1, arq);
+    img->nBytes += lidos * sizeof(int);
+
+    lidos = fread(&img->tipoImg, sizeof(int), 1, arq);
+    img->nBytes += lidos * sizeof(int);
+
+    int nPix = img->linhas * img->colunas;
 
     if (img->tipoImg == INT)
     {
-        img->dado = malloc (sizeof (int) * (img->altura * img->largura));
-        fread (img->dado, sizeof (int), (img->altura * img->largura), arq);
-        img->nBytes += sizeof(int);
+        img->pixels = malloc (nPix * sizeof(int));
+        if (img->pixels == NULL)
+        {
+            free (img);
+            fclose (arq);
+            exit (1);
+        }
+
+        lidos = fread (img->pixels, sizeof(int), nPix, arq);
+        img->nBytes += lidos * sizeof(int);
     }
 
-    else
+    else if (img->tipoImg == FLOAT)
     {
-        img->dado = malloc (sizeof (float) * (img->altura * img->largura));
-        fread (img->dado, sizeof (float), (img->altura * img->largura), arq);
-        img->nBytes += sizeof(int);  
+        img->pixels = malloc (nPix * sizeof(float));
+        if (img->pixels == NULL)
+        {
+            free (img);
+            fclose (arq);
+            exit (1);
+        }
+
+        lidos = fread (img->pixels, sizeof(float), nPix, arq);
+        img->nBytes += lidos * sizeof(float);
     }
 
-    fclose(arq);                            // ponteiro para o arquivo
+    fclose (arq);
+
     return img;
 }
 
@@ -77,7 +91,7 @@ Imagem *LerImagem(const char *caminho)
  */
 void DestruirImagem(Imagem *img)
 {
-    free (img->dado);
+    free (img->pixels);
     free (img);
 }
 
@@ -97,11 +111,11 @@ int ObterNumeroBytesLidos(Imagem *img)
  */
 void ImprimirImagem(Imagem *img)
 {
-    int nPix = img->altura * img->largura;
+    int nPix = img->linhas * img->colunas;
 
     if (img->tipoImg == INT)
     {
-        int *pix = (int *) img->dado;
+        int *pix = (int *) img->pixels;
 
         for (int i = 0; i < nPix; i++)
         {
@@ -111,7 +125,7 @@ void ImprimirImagem(Imagem *img)
 
     else if (img->tipoImg == FLOAT)
     {
-        float *pix = (float *) img->dado;
+        float *pix = (float *) img->pixels;
 
         for (int i = 0; i < nPix; i++)
         {
