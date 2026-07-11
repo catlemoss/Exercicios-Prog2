@@ -3,10 +3,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define TAM_TABULEIRO 3
-#define PECA_1 1
-#define PECA_2 2
-
 struct Tabuleiro
 {
     char mat[TAM_TABULEIRO][TAM_TABULEIRO];
@@ -21,13 +17,8 @@ struct Tabuleiro
  */
 tTabuleiro* CriaTabuleiro()
 {
-    tTabuleiro *tabuleiro = malloc (sizeof (struct Tabuleiro));
-
-    if (tabuleiro == NULL)
-    {
-        printf("Erro ao alocar tabuleiro.\n");
-        return NULL;
-    }
+    tTabuleiro *tabuleiro = malloc (sizeof (tTabuleiro));
+    if (tabuleiro == NULL) exit (1);
 
     for (int i = 0; i < TAM_TABULEIRO; i++)
     {
@@ -48,7 +39,7 @@ tTabuleiro* CriaTabuleiro()
  */
 void DestroiTabuleiro(tTabuleiro* tabuleiro)
 {
-    free(tabuleiro);
+    free (tabuleiro);
 }
 
 
@@ -62,11 +53,8 @@ void DestroiTabuleiro(tTabuleiro* tabuleiro)
  */
 void MarcaPosicaoTabuleiro(tTabuleiro* tabuleiro, int peca, int x, int y)
 {
-    if (!EhPosicaoValidaTabuleiro(x, y)) return;
-    if (!EstaLivrePosicaoTabuleiro(tabuleiro, x, y)) return;
-
-    if (peca == PECA_1) tabuleiro->mat[x][y] = 'X';
-    else if (peca == PECA_2) tabuleiro->mat[x][y] = '0';
+    if (peca == PECA_1) tabuleiro->mat[y][x] = 'X';
+    else if (peca == PECA_2) tabuleiro->mat[y][x] = '0';
 }
 
 
@@ -103,11 +91,8 @@ int TemPosicaoLivreTabuleiro(tTabuleiro* tabuleiro)
  */
 int EstaMarcadaPosicaoPecaTabuleiro(tTabuleiro* tabuleiro, int x, int y, int peca)
 {
-    if (!EhPosicaoValidaTabuleiro(x, y)) return 0;
-
-    if (peca == PECA_1) return tabuleiro->mat[x][y] == 'X';
-
-    if (peca == PECA_2) return tabuleiro->mat[x][y] == '0';
+    if (peca == PECA_1) return tabuleiro->mat[y][x] == 'X';
+    if (peca == PECA_2) return tabuleiro->mat[y][x] == '0';
 
     return 0;
 }
@@ -124,15 +109,7 @@ int EstaMarcadaPosicaoPecaTabuleiro(tTabuleiro* tabuleiro, int x, int y, int pec
  */
 int EstaLivrePosicaoTabuleiro(tTabuleiro* tabuleiro, int x, int y)
 {
-    for (int i = 0; i < TAM_TABULEIRO; i++)
-    {
-        for (int j = 0; j < TAM_TABULEIRO; j++)
-        {
-            if (tabuleiro->mat[x][y] == '-') return 1;
-        }
-    }
-
-    return 0;
+    return tabuleiro->mat[y][x] == '-';
 }
 
 
@@ -146,7 +123,7 @@ int EstaLivrePosicaoTabuleiro(tTabuleiro* tabuleiro, int x, int y)
  */
 int EhPosicaoValidaTabuleiro(int x, int y)
 {
-    return (0 <= x && x < TAM_TABULEIRO && 0 <= y && y < TAM_TABULEIRO);
+    return ((0 <= x && x < TAM_TABULEIRO) && (0 <= y && y < TAM_TABULEIRO));
 }
 
 
@@ -159,11 +136,11 @@ void ImprimeTabuleiro(tTabuleiro* tabuleiro)
 {
     for (int i = 0; i < TAM_TABULEIRO; i++)
     {
+        printf("\t");
+
         for (int j = 0; j < TAM_TABULEIRO; j++)
         {
             printf("%c", tabuleiro->mat[i][j]);
-
-            if (j < TAM_TABULEIRO - 1) printf(" ");
         }
 
         printf("\n");
