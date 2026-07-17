@@ -28,21 +28,17 @@ struct Aluno
  */
 tAluno* CriarAluno(char* nome, char* dataNascimento, char* curso, int periodo, float coeficienteRendimento)
 {
-    tAluno *a = malloc (sizeof (tAluno));
-    if (a == NULL)
-    {
-        printf("Erro ao alocar memoria para aluno!\n");
-        exit (1);
-    }
+    tAluno *aluno = malloc (sizeof (*aluno));
+    if (aluno == NULL) exit (1);
 
-    strcpy(a->nome, nome);
-    strcpy(a->dataBirth, dataNascimento);
-    strcpy(a->curso, curso);
+    strcpy(aluno->nome, nome);
+    strcpy(aluno->dataBirth, dataNascimento);
+    strcpy(aluno->curso, curso);
 
-    a->periodo = periodo;
-    a->CR = coeficienteRendimento;
+    aluno->periodo = periodo;
+    aluno->CR = coeficienteRendimento;
 
-    return a;
+    return aluno;
 }
 
 /**
@@ -52,7 +48,6 @@ tAluno* CriarAluno(char* nome, char* dataNascimento, char* curso, int periodo, f
  */
 void DestruirAluno(tAluno* aluno)
 {
-    if (aluno == NULL) return;
     free (aluno);
 }
 
@@ -65,29 +60,29 @@ void DestruirAluno(tAluno* aluno)
 tAluno *LeAluno(FILE *arquivo_binario)
 {
     char nome[101];
-    char dataNascimento[12];
+    char dataBirth[12];
     char curso[51];
+
     float periodo;
     float CR;
 
-    if (fread(nome, sizeof(char), 100, arquivo_binario) != 100) return NULL;
+    scanf(" %[^\n]", nome);
+    scanf(" %[^\n]", dataBirth);
+    scanf(" %[^\n]", curso);
 
-    if (fread(dataNascimento, sizeof(char), 11, arquivo_binario) != 11) return NULL;
-    
-    if (fread(curso, sizeof(char), 50, arquivo_binario) != 50) return NULL;
-    
-    if (fread(&periodo, sizeof(float), 1, arquivo_binario) != 1) return NULL;
-    
-    if (fread(&CR, sizeof(float), 1, arquivo_binario) != 1) return NULL;
-    
+    scanf("%f", &periodo);
+    scanf("%f", &CR);
 
-    nome[100] = '\0';
-    dataNascimento[11] = '\0';
-    curso[50] = '\0';
+    fread (nome, sizeof(char), 100, arquivo_binario);
+    fread (dataBirth, sizeof(char), 11, arquivo_binario);
+    fread (curso, sizeof(char), 50, arquivo_binario);
 
-    tAluno *a = CriarAluno(nome, dataNascimento, curso, periodo, CR);
+    fread (&periodo, sizeof(float), 1, arquivo_binario);
+    fread (&CR, sizeof(float), 1, arquivo_binario);
 
-    return a;
+    tAluno *aluno = CriarAluno (nome, dataBirth, curso, periodo, CR);
+
+    return aluno;
 }
 
 /**

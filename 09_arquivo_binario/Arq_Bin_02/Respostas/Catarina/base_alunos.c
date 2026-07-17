@@ -11,7 +11,6 @@ struct BaseAlunos
 {
     tAluno **alunos;
     int qnt;
-    int max;
 };
 
 /**
@@ -21,18 +20,13 @@ struct BaseAlunos
  */
 tBaseAlunos* CriarBaseAlunos()
 {
-    tBaseAlunos *b = malloc (sizeof (tBaseAlunos));
-    if (b == NULL)
-    {
-        printf("Erro ao criar base aluno!\n");
-        exit (1);
-    }
+    tBaseAlunos *base = malloc (sizeof (*base));
+    if (base == NULL) exit (1);
 
-    b->alunos = NULL;
-    b->qnt = 0;
-    b->max = 0;
+    base->alunos = NULL;
+    base->qnt = 0;
 
-    return b;
+    return base;
 }
 
 /**
@@ -59,49 +53,20 @@ void DestruirBaseAlunos(tBaseAlunos* baseAlunos)
  */
 void LerBaseAlunos(tBaseAlunos* baseAlunos, char* nomeArquivo)
 {
-    FILE *arquivo_binario = fopen (nomeArquivo, "rb");
+    FILE *arq = fopen (nomeArquivo, "rb");
+    if (arq == NULL) exit (1);
 
-    if (arquivo_binario == NULL)
+    fread (&baseAlunos->qnt, sizeof(int), 1, arq);
+
+    baseAlunos->alunos = malloc (baseAlunos->qnt * sizeof(baseAlunos->alunos));
+    if (baseAlunos == NULL) { fclose (arq), exit (1); }
+
+    for (int i = 0; i < baseAlunos->qnt; i++)
     {
-        printf("Erro ao ler arquivo %s!\n", nomeArquivo);
-        exit(1);
+        baseAlunos->alunos[i] = LeAluno(arq);
     }
 
-    int qntAlunos;
-    if (fread(&qntAlunos, sizeof(int), 1, arquivo_binario) != 1)
-    {
-        printf("Erro ao ler quantidade de alunos!\n");
-        fclose(arquivo_binario);
-        exit(1);
-    }
-
-    baseAlunos->qnt = 0;
-    baseAlunos->max = qntAlunos;
-
-    baseAlunos->alunos = malloc (qntAlunos * sizeof(tAluno *));
-    if (qntAlunos > 0 && baseAlunos->alunos == NULL)
-    {
-        printf("Erro ao alocar vetor de alunos!\n");
-        fclose(arquivo_binario);
-        exit(1);
-    }
-
-    for (int i = 0; i < qntAlunos; i++)
-    {
-        tAluno *aluno = LeAluno(arquivo_binario);
-
-        if (aluno == NULL)
-        {
-            printf("Erro ao ler aluno!\n");
-            fclose(arquivo_binario);
-            exit(1);
-        }
-
-        baseAlunos->alunos[baseAlunos->qnt] = aluno;
-        baseAlunos->qnt++;
-    }
-
-    fclose(arquivo_binario);
+    fclose (arq);
 }
 
 /**
