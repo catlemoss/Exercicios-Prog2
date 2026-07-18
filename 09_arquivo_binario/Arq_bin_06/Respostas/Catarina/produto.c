@@ -11,8 +11,8 @@ struct Produto
 {
     int cod;
     char nome[50];
-    float preco;
-    int qntVendida;
+    float valor;
+    int qntVend;
 };
 
 /**
@@ -25,16 +25,17 @@ struct Produto
  */
 tProduto *CriaProduto(int codigo, char *nome, float preco, int quantidadeVendida)
 {
-    tProduto *p = malloc (sizeof (tProduto));
-    if (p == NULL) exit (1);
+    tProduto *produto = malloc (sizeof (*produto));
+    if (produto == NULL) exit (1);
 
-    p->cod = codigo;
-    p->preco = preco;
-    p->qntVendida = quantidadeVendida;
+    produto->cod = codigo;
+    produto->qntVend = quantidadeVendida;
 
-    strcpy(p->nome, nome);
+    produto->valor = preco;
 
-    return p;
+    strcpy(produto->nome, nome);
+
+    return produto;
 }
 
 /**
@@ -63,13 +64,14 @@ tProduto *LeProduto(FILE *arquivo)
 
     if (fread (&p->cod, sizeof(int), 1, arquivo) != 1) exit (1);
     if (fread (p->nome, sizeof(p->nome), 1, arquivo) != 1) exit (1);
-    if (fread (&p->preco, sizeof(float), 1, arquivo) != 1) exit (1);
-    if (fread (&p->qntVendida, sizeof(int), 1, arquivo) != 1) exit (1);
+    if (fread (&p->valor, sizeof(float), 1, arquivo) != 1) exit (1);
+    if (fread (&p->qntVend, sizeof(int), 1, arquivo) != 1) exit (1);
 
     p->nome[49] = '\0';
 
     return p;
 }
+
 /**
  * @brief Função para imprimir um produto no formato "Codigo;Nome;Preco;Quantidade vendida".
  * @param produto Um ponteiro para o produto a ser impresso.
@@ -77,10 +79,10 @@ tProduto *LeProduto(FILE *arquivo)
 void ImprimeProduto(tProduto *produto)
 {
     printf("%d;%s;R$ %.2f;%d", 
-        produto->cod, 
-        produto->nome, 
-        produto->preco, 
-        produto->qntVendida
+        produto->cod,
+        produto->nome,
+        produto->valor,
+        produto->qntVend
     );
 }
 
@@ -91,7 +93,7 @@ void ImprimeProduto(tProduto *produto)
  */
 int GetQuantidadeVendidaProduto(tProduto *produto)
 {
-    return produto->qntVendida;
+    return produto->qntVend;
 }
 
 /**
@@ -101,5 +103,5 @@ int GetQuantidadeVendidaProduto(tProduto *produto)
 */
 float GetPrecoProduto(tProduto *produto)
 {
-    return produto->preco;
+    return produto->valor;
 }
