@@ -2,7 +2,7 @@
 Para este exercício, é necessário ler os dados dos produtos vendidos
 por um estabelecimento a partir de um arquivo binário.
 Catarina Lemos
-18/07/2026
+04/07/2026
 */
 
 #include "estabelecimento.h"

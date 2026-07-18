@@ -1,5 +1,8 @@
 #include "estabelecimento.h"
 
+#include "vector.h"
+#include "produto.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -9,7 +12,7 @@
 struct Estabelecimento
 {
     tProduto **produtos;
-    int qnt;
+    int nProdutos;
     int max;
 };
 
@@ -19,8 +22,13 @@ struct Estabelecimento
  */
 tEstabelecimento *CriaEstabelecimento()
 {
-    tEstabelecimento *e = calloc (1, sizeof(*e));
+    tEstabelecimento *e = malloc (sizeof (tEstabelecimento));
     if (e == NULL) exit (1);
+
+    e->produtos = NULL;
+
+    e->nProdutos = 0;
+    e->max = 0;
 
     return e;
 }
@@ -31,12 +39,12 @@ tEstabelecimento *CriaEstabelecimento()
  */
 void DestroiEstabelecimento(tEstabelecimento *estabelecimento)
 {
-    for (int i = 0; i < estabelecimento->qnt; i++)
+    for (int i = 0; i < estabelecimento->nProdutos; i++)
     {
-        DestroiProduto (estabelecimento->produtos[i]);
+        DestroiProduto(estabelecimento->produtos[i]);
     }
 
-    free (estabelecimento->produtos);
+    DestroiProduto(estabelecimento->produtos);
     free (estabelecimento);
 }
 
@@ -47,18 +55,25 @@ void DestroiEstabelecimento(tEstabelecimento *estabelecimento)
  */
 void AdicionaProdutoEstabelecimento(tEstabelecimento *estabelecimento, tProduto *produto)
 {
-    if (estabelecimento->qnt == estabelecimento->max)
+    if (estabelecimento->max == 0)
+    {
+        estabelecimento->max = 4;
+        estabelecimento->produtos = malloc (estabelecimento->max * sizeof(tProduto *));
+    }
+
+    if (estabelecimento->nProdutos == estabelecimento->max)
     {
         int newMax = estabelecimento->max *2;
 
-        tProduto **newProduto = realloc (estabelecimento->produtos, newMax * sizeof(tProduto *));
-
+        tProduto **newProd = realloc (estabelecimento->produtos, newMax * sizeof(tProduto *));
+        if (newProd == NULL) exit(1);
+        
+        estabelecimento->produtos = newProd;
         estabelecimento->max = newMax;
-        estabelecimento->produtos = newProduto;
     }
 
-    estabelecimento->produtos[estabelecimento->qnt] = produto;
-    estabelecimento->qnt++;
+    estabelecimento->produtos[estabelecimento->nProdutos] = produto;
+    estabelecimento->nProdutos++;
 }
 
 /**
@@ -70,22 +85,50 @@ void AdicionaProdutoEstabelecimento(tEstabelecimento *estabelecimento, tProduto 
 void LeEstabelecimento(tEstabelecimento *estabelecimento)
 {
     char nomeArq[50];
-    scanf("%s\n", nomeArq);
+    scanf("%49s", nomeArq);
 
-    FILE *arq = fopen (nomeArq, "rb");
-
-    fread (&estabelecimento->qnt, sizeof(int), 1, arq);
-
-    estabelecimento->max = estabelecimento->qnt;
-
-    estabelecimento->produtos = calloc (estabelecimento->qnt, sizeof(tProduto *));
-
-    for (int i = 0; i < estabelecimento->qnt; i++)
+    FILE *arq = fopen(nomeArq, "rb");
+    if (arq == NULL)
     {
-        estabelecimento->produtos[i] = LeProduto(arq);
+        exit(1);
     }
 
-    fclose (arq);
+    int qntProd;
+
+    if ( fread (&qntProd, sizeof(int), 1, arq) != 1)
+    {
+        fclose(arq);
+        exit(1);
+    }
+
+    estabelecimento->nProdutos = qntProd;
+    estabelecimento->max = qntProd;
+
+    estabelecimento->produtos = malloc (qntProd * sizeof(tProduto *));
+    if (estabelecimento->produtos == NULL)
+    {
+        fclose(arq);
+        exit(1);
+    }
+
+    for (int i = 0; i < qntProd; i++)
+    {
+        estabelecimento->produtos[i] = LeProduto(arq);
+
+        if (estabelecimento->produtos[i] == NULL)
+        {
+            for (int j = 0; j < i; j++)
+            {
+                DestroiProduto(estabelecimento->produtos[j]);
+            }
+
+            free(estabelecimento->produtos);
+            fclose(arq);
+            exit(1);
+        }
+    }
+
+    fclose(arq);
 }
 
 /**
@@ -99,7 +142,7 @@ void ImprimeProdutosEmFaltaEstabelecimento(tEstabelecimento *estabelecimento)
 
     int imprimiu = 0;
 
-    for (int i = 0; i < estabelecimento->qnt; i++)
+    for (int i = 0; i < estabelecimento->nProdutos; i++)
     {
         if (!TemEstoqueProduto(estabelecimento->produtos[i]))
         {

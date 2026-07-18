@@ -17,10 +17,14 @@ struct Vector
 */
 Vector *VectorConstruct()
 {
-    Vector *vet = calloc (1, sizeof(*vet));
-    if (vet == NULL) exit (1);
+    Vector *v = malloc (sizeof (Vector));
+    if (v == NULL) exit (1);
 
-    return vet;
+    v->dado = NULL;
+    v->qnt = 0;
+    v->max = 0;
+
+    return v;
 }
 
 /**

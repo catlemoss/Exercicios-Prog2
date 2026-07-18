@@ -3,6 +3,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+typedef void (*Impressao)(void *);
+
 /**
  * @brief Estrutura para representar uma imagem.
  */
@@ -14,7 +16,13 @@ struct tImagem
     Tipo tipoImg;
 
     void *pixels;
+    int numPix;
+
+    Impressao imprimir;
 };
+
+static void imprimeInt(void *pix);
+static void imprimeFloat(void *pix);
 
 /**
  * @brief Função para ler uma imagem de um arquivo binário e aloca-la na memória.
@@ -27,33 +35,31 @@ Imagem *LerImagem(const char *caminho)
     FILE *arq = fopen (caminho, "rb");
     if (arq == NULL) exit (1);
 
-    Imagem *img = malloc (sizeof (*img));
+    Imagem *img = calloc (1, sizeof(*img));
     if (img == NULL) exit (1);
 
-    img->bytesLidos = 0;
-    img->pixels = NULL;
-
-    img->bytesLidos += fread (&img->altura, sizeof(int), 1, arq);
-    img->bytesLidos += fread (&img->largura, sizeof(int), 1, arq);
-    img->bytesLidos += fread (&img->tipoImg, sizeof(int), 1 , arq);
+    img->bytesLidos += fread (&img->altura, sizeof(img->altura), 1, arq);
+    img->bytesLidos += fread (&img->largura, sizeof(img->largura), 1, arq);
+    img->bytesLidos += fread (&img->tipoImg, sizeof(img->tipoImg), 1 , arq);
 
     int qnt = img->altura * img->largura;
 
     if (img->tipoImg == INT)
     {
-        img->pixels = malloc (qnt * sizeof(int));
-        if (img->pixels  == NULL) { fclose(arq); exit (1); }
-
-        img->bytesLidos += fread (img->pixels, sizeof(int), qnt, arq);
+        img->numPix = sizeof(int);
+        img->imprimir = imprimeInt;
     }
 
     else if (img->tipoImg == FLOAT)
     {
-        img->pixels = malloc (qnt * sizeof(float));
-        if (img->pixels == NULL) { fclose(arq); exit (1); }
-
-        img->bytesLidos += fread (img->pixels, sizeof(float), qnt, arq);
+        img->numPix = sizeof(float);
+        img->imprimir = imprimeFloat;
     }
+
+    int qnt = img->altura * img->largura;
+    img->pixels = malloc (qnt * img->numPix);
+
+    img->bytesLidos = fread (img->pixels, img->numPix, qnt, arq);
 
     fclose (arq);
 
@@ -86,25 +92,30 @@ int ObterNumeroBytesLidos(Imagem *img)
  */
 void ImprimirImagem(Imagem *img)
 {
-    int qnt = img->altura * img->largura;
-
-    if (img->tipoImg == INT)
+    for (int i = 0; i < img->altura; i++)
     {
-        int *pixels = (int *) img->pixels;
-
-        for (int i = 0; i < qnt; i++)
+        char *sep = "";
+        for (int j = 0; j < img->largura; j++)
         {
-            printf("%d ", pixels[i]);
-        }
-    }
+            scanf("%s", sep);
+            sep = " ";
+            int elem_offset = i * img->largura + j;
 
-    else if (img->tipoImg == FLOAT)
-    {
-        float *pixels = (float *) img->pixels;
+            int bytes_offset = img->numPix * elem_offset;
 
-        for (int i = 0; i < qnt; i++)
-        {
-            printf("%.2f ", pixels[i]);
+            img->imprimir(img->pixels + bytes_offset);
         }
+++++++++++++++++++++++++++
+        printf("\n");
     }
+}
+
+static void imprimeInt(void *pix)
+{
+    printf("%d", *(int *) pix);
+}
+
+static void imprimeFloat(void *pix)
+{
+    printf("%.2f", *(float *) pix);
 }

@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+
 /**
  * @brief Estrutura para representar um produto.
  */
@@ -11,7 +12,7 @@ struct Produto
 {
     int cod;
     char nome[50];
-    float valor;
+    float preco;
     int qnt;
 };
 
@@ -25,17 +26,16 @@ struct Produto
  */
 tProduto *CriaProduto(int codigo, char *nome, float preco, int quantidade)
 {
-    tProduto *produto = malloc (sizeof(*produto));
-    if (produto == NULL) exit (1);
+    tProduto *p = malloc (sizeof (tProduto));
+    if (p == NULL) exit (1);
 
-    strcpy(produto->nome, nome);
+    p->cod = codigo;
+    p->preco = preco;
+    p->qnt = quantidade;
 
-    produto->cod = codigo;
-    produto->qnt = quantidade;
+    strcpy(p->nome, nome);
 
-    produto->valor = preco;
-
-    return produto;
+    return p;
 }
 
 /**
@@ -76,7 +76,7 @@ tProduto *LeProduto(FILE *arquivo)
         return NULL;
     }
 
-    if (fread(&p->valor, sizeof(float), 1, arquivo)!= 1)
+    if (fread(&p->preco, sizeof(float), 1, arquivo)!= 1)
     {
         free (p);
         return NULL;
@@ -109,5 +109,5 @@ int TemEstoqueProduto(tProduto *produto)
  */
 void ImprimeProduto(tProduto *produto)
 {
-    printf("%d;%s;%.2f\n", produto->cod, produto->nome, produto->valor);
+    printf("%d;%s;%.2f\n", produto->cod, produto->nome, produto->preco);
 }
