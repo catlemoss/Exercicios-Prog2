@@ -3,7 +3,7 @@ Foi solicitado a você fazer outro relatório sobre os produtos vendidos
 pelos estabelecimentos do exercício anterior. Dessa vez, o relatório deverá informar
 o valor total vendido.
 Catarian Lemos
-18/07/2026
+05/07/2026
 */
 
 #include "estabelecimento.h"

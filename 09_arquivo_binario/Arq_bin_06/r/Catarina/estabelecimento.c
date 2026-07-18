@@ -19,8 +19,13 @@ struct Estabelecimento
  */
 tEstabelecimento *CriaEstabelecimento()
 {
-    tEstabelecimento *e = calloc (1, sizeof(*e));
+    tEstabelecimento *e = malloc (sizeof (tEstabelecimento));
     if (e == NULL) exit (1);
+
+    e->produtos = NULL;
+    
+    e->qnt = 0;
+    e->max = 0;
 
     return e;
 }
@@ -33,7 +38,7 @@ void DestroiEstabelecimento(tEstabelecimento *estabelecimento)
 {
     for (int i = 0; i < estabelecimento->qnt; i++)
     {
-        DestroiProduto (estabelecimento->produtos[i]);
+        DestroiProduto(estabelecimento->produtos[i]);
     }
 
     free (estabelecimento->produtos);
@@ -47,14 +52,21 @@ void DestroiEstabelecimento(tEstabelecimento *estabelecimento)
  */
 void AdicionaProdutoEstabelecimento(tEstabelecimento *estabelecimento, tProduto *produto)
 {
+    if (estabelecimento->max == 0)
+    {
+        estabelecimento->max = 4;
+        estabelecimento->produtos = malloc (estabelecimento->max * sizeof(tProduto *));
+    }
+
     if (estabelecimento->qnt == estabelecimento->max)
     {
         int newMax = estabelecimento->max *2;
 
-        tProduto **newProduto = realloc (estabelecimento->produtos, newMax * sizeof(tProduto *));
+        tProduto **newProd = realloc (estabelecimento->produtos, newMax * sizeof(tProduto *));
+        if (newProd == NULL) exit (1);
 
         estabelecimento->max = newMax;
-        estabelecimento->produtos = newProduto;
+        estabelecimento->produtos = newProd;
     }
 
     estabelecimento->produtos[estabelecimento->qnt] = produto;
@@ -70,22 +82,47 @@ void AdicionaProdutoEstabelecimento(tEstabelecimento *estabelecimento, tProduto 
 void LeEstabelecimento(tEstabelecimento *estabelecimento)
 {
     char nomeArq[50];
-    scanf("%s\n", nomeArq);
+    scanf("%49s", nomeArq);
 
     FILE *arq = fopen(nomeArq, "rb");
     if (arq == NULL) exit(1);
 
-    fread (&estabelecimento->qnt, sizeof(int), 1, arq);
+    int qntProd;
 
-    estabelecimento->max = estabelecimento->qnt;
-    estabelecimento->produtos = calloc (estabelecimento->qnt, sizeof(tProduto *));
-
-    for (int i = 0; i < estabelecimento->qnt; i++)
+    if ( fread (&qntProd, sizeof(int), 1, arq) != 1)
     {
-        estabelecimento->produtos[i] = LeProduto(arq);
+        fclose(arq);
+        exit(1);
     }
 
-    fclose (arq);
+    estabelecimento->qnt = qntProd;
+    estabelecimento->max = qntProd;
+
+    estabelecimento->produtos = malloc (qntProd * sizeof(tProduto *));
+    if (estabelecimento->produtos == NULL)
+    {
+        fclose(arq);
+        exit(1);
+    }
+
+    for (int i = 0; i < qntProd; i++)
+    {
+        estabelecimento->produtos[i] = LeProduto(arq);
+
+        if (estabelecimento->produtos[i] == NULL)
+        {
+            for (int j = 0; j < i; j++)
+            {
+                DestroiProduto(estabelecimento->produtos[j]);
+            }
+
+            free(estabelecimento->produtos);
+            fclose(arq);
+            exit(1);
+        }
+    }
+
+    fclose(arq);
 }
 
 /**
@@ -95,14 +132,14 @@ void LeEstabelecimento(tEstabelecimento *estabelecimento)
 */
 float GetValorTotalVendidoEstabelecimento(tEstabelecimento *estabelecimento)
 {
-    float total = 0;
+    float precoT = 0;
 
     for (int i = 0; i < estabelecimento->qnt; i++)
     {
-        total += GetPrecoProduto(estabelecimento->produtos[i]) * GetQuantidadeVendidaProduto(estabelecimento->produtos[i]);
+        precoT += GetPrecoProduto(estabelecimento->produtos[i]) * GetQuantidadeVendidaProduto(estabelecimento->produtos[i]);
     }
 
-    return total;
+    return precoT;
 }
 
 /**
@@ -120,8 +157,9 @@ void ImprimeRelatorioEstabelecimento(tEstabelecimento *estabelecimento)
     {
         ImprimeProduto(estabelecimento->produtos[i]);
 
-        float per = GetPrecoProduto(estabelecimento->produtos[i]) * GetQuantidadeVendidaProduto(estabelecimento->produtos[i]) / GetValorTotalVendidoEstabelecimento(estabelecimento) *100;
+        float perc = GetPrecoProduto(estabelecimento->produtos[i]) *
+            GetQuantidadeVendidaProduto(estabelecimento->produtos[i]) / GetValorTotalVendidoEstabelecimento(estabelecimento) * 100;
 
-        printf(";%.2f%%\n", per);
+        printf(";%.2f%%\n", perc);
     }
 }
