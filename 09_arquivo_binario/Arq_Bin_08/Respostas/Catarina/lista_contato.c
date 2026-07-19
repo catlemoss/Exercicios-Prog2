@@ -47,14 +47,8 @@ void AdicionarContatoListaContato(tListaContato *l, tContato *contato)
 {
     for (int i = 0; i < VectorSize(l->lista); i++)
     {
-        if (ComparaNomeContato(VectorGet(l->lista, i), contato))
-        {
-            printf("Ja existe um contato com esse nome e/ou numero de telefone\n");
-            DestruirContato(contato);
-            return;
-        }
-
-        if (ComparaTelefoneContato(VectorGet(l->lista, i), contato))
+        if (ComparaNomeContato(VectorGet(l->lista, i), contato) || 
+            ComparaTelefoneContato(VectorGet(l->lista, i), contato))
         {
             printf("Ja existe um contato com esse nome e/ou numero de telefone\n");
             DestruirContato(contato);
