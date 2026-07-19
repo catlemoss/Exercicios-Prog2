@@ -45,7 +45,7 @@ void DestroiProfessor(tProfessor *prof)
  */
 tProfessor *LeProfessor()
 {
-    tProfessor *prof = malloc (sizeof(*prof));
+    tProfessor *prof = calloc (1, sizeof(*prof));
     if (prof == NULL) exit (1);
 
     scanf(" %49[^\n]", prof->nome);

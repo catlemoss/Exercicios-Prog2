@@ -52,7 +52,7 @@ void DestroiAluno(tAluno *aluno)
  */
 tAluno *LeAluno()
 {
-    tAluno *aluno = malloc (sizeof(*aluno));
+    tAluno *aluno = calloc (1, sizeof(*aluno));
     if (aluno == NULL) exit (1);
 
     scanf(" %49[^\n]", aluno->nome);
