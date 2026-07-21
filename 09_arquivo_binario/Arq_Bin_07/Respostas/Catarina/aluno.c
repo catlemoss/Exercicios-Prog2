@@ -9,6 +9,7 @@ struct Aluno
     char nome[50];
     char dataBirth[12];
     char curso[50];
+
     float conclusao;
     float cr;
 };
@@ -52,17 +53,16 @@ void DestroiAluno(tAluno *aluno)
  */
 tAluno *LeAluno()
 {
-    tAluno *aluno = calloc (1, sizeof(*aluno));
-    if (aluno == NULL) exit (1);
+    char nome[50], dataBirth[12], curso[50];
+    float conclusao, cr;
 
-    scanf(" %49[^\n]", aluno->nome);
-    scanf(" %11s", aluno->dataBirth);
-    scanf(" %49[^\n]", aluno->curso);
+    scanf(" %[^\n]\n", nome);
+    scanf(" %[^\n]\n", dataBirth);
+    scanf(" %[^\n]\n", curso);
+    scanf(" %f\n", &conclusao);
+    scanf(" %f\n", &cr);
 
-    scanf(" %f", &aluno->conclusao);
-    scanf(" %f", &aluno->cr);
-
-    return aluno;
+    return CriaAluno(nome, dataBirth, curso, conclusao, cr);
 }
 
 /**
@@ -86,11 +86,11 @@ int SalvaAluno(tAluno *aluno, FILE *file)
 {
     int bytes = 0;
 
-    bytes += fwrite(aluno->nome, sizeof(char), 50, file);
-    bytes += fwrite(aluno->dataBirth, sizeof(char), 12, file);
-    bytes += fwrite(aluno->curso, sizeof(char), 50, file);
-    bytes += fwrite(&aluno->conclusao, sizeof(float), 1, file);
-    bytes += fwrite(&aluno->cr, sizeof(float), 1, file);
+    bytes += fwrite (aluno->nome, sizeof(char), 50, file);
+    bytes += fwrite (aluno->dataBirth, sizeof(char), 12, file);
+    bytes += fwrite (aluno->curso, sizeof(char), 50, file);
+    bytes += fwrite (&aluno->conclusao, sizeof(float),1, file);
+    bytes += fwrite (&aluno->cr, sizeof(float), 1, file);
 
     return bytes;
 }
@@ -106,10 +106,10 @@ int CarregaAluno(tAluno *aluno, FILE *file)
     int bytes = 0;
 
     bytes += fread (aluno->nome, sizeof(char), 50, file);
-    bytes += fread(aluno->dataBirth, sizeof(char), 12, file);
-    bytes += fread(aluno->curso, sizeof(char), 50, file);
-    bytes += fread(&aluno->conclusao, sizeof(float), 1, file);
-    bytes += fread(&aluno->cr, sizeof(float), 1, file);
+    bytes += fread (aluno->dataBirth, sizeof(char), 12, file);
+    bytes += fread (aluno->curso, sizeof(char), 50, file);
+    bytes += fread (&aluno->conclusao, sizeof(float),1, file);
+    bytes += fread (&aluno->cr, sizeof(float), 1, file);
 
     return bytes;
 }

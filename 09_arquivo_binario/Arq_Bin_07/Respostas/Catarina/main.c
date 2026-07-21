@@ -2,7 +2,7 @@
 Este exercício consiste em implementar funções para salvar um vetor que
 contém elementos de qualquer tipo (vetor genérico) em um arquivo binário.
 Catarina Lemos
-18/07/2026
+21/07/2026
 */
 
 #include <stdio.h>
@@ -33,6 +33,9 @@ int main()
     printf("Numero de bytes salvos: %d\n", bytesSalvos);
 
     DestroiDatabase(base);
+    
+    /////////////////////////////////////////
+
     base = CriaDatabase();
 
     arq = fopen(nomeArq, "rb");

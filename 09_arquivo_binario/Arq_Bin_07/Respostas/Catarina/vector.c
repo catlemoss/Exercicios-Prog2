@@ -1,7 +1,7 @@
-#include "vector.h"
-
 #include <stdio.h>
 #include <stdlib.h>
+
+#include "vector.h"
 
 struct Vector
 {
@@ -59,15 +59,12 @@ void VectorPushBack(Vector *v, DataType val)
 */
 void VectorRemove(Vector *v, int i)
 {
-    for (int i = 0; i < v->qnt; i++)
+    for (int j = i; i < v->qnt -1-i; j++)
     {
-        for (int j = i; j < v->qnt -1-i; j++)
-        {
-            v->dado[j] = v->dado[j+1];
-        }
-
-        v->qnt--;
+        v->dado[j] = v->dado[j+1];
     }
+
+    v->qnt--;
 }
 
 /**
@@ -102,7 +99,7 @@ int VectorSize(Vector *v)
 */
 void VectorSwap(Vector *v, int i, int j)
 {
-    DataType aux = v->dado[i];
+    DataType *aux = v->dado[i];
     v->dado[i] = v->dado[j];
     v->dado[j] = aux;
 }

@@ -8,7 +8,7 @@ struct Professor
 {
     char nome[50];
     char dataBirth[12];
-    char departamento[50];
+    char dpto[50];
 };
 
 /**
@@ -25,7 +25,7 @@ tProfessor *CriaProfessor(char *nome, char *dataNascimento, char *departamento)
 
     strcpy(prof->nome, nome);
     strcpy(prof->dataBirth, dataNascimento);
-    strcpy(prof->departamento, departamento);
+    strcpy(prof->dpto, departamento);
 
     return prof;
 }
@@ -45,14 +45,13 @@ void DestroiProfessor(tProfessor *prof)
  */
 tProfessor *LeProfessor()
 {
-    tProfessor *prof = calloc (1, sizeof(*prof));
-    if (prof == NULL) exit (1);
+    char nome[50], dataBirth[12], dpto[50];
 
-    scanf(" %49[^\n]", prof->nome);
-    scanf(" %11s", prof->dataBirth);
-    scanf(" %49[^\n]", prof->departamento);
+    scanf(" %[^\n]\n", nome);
+    scanf(" %[^\n]\n", dataBirth);
+    scanf(" %[^\n]\n", dpto);
 
-    return prof;
+    return CriaProfessor(nome, dataBirth, dpto);
 }
 
 /**
@@ -76,9 +75,9 @@ int SalvaProfessor(tProfessor *prof, FILE *file)
 {
     int bytes = 0;
 
-    bytes += fwrite(prof->nome, sizeof(char), 50, file);
-    bytes += fwrite(prof->dataBirth, sizeof(char), 12, file);
-    bytes += fwrite(prof->departamento, sizeof(char), 50, file);
+    bytes += fwrite (prof->nome, sizeof(char), 50, file);
+    bytes += fwrite (prof->dataBirth, sizeof(char), 12, file);
+    bytes += fwrite (prof->dpto, sizeof(char), 50, file);
 
     return bytes;
 }
@@ -94,8 +93,8 @@ int CarregaProfessor(tProfessor *prof, FILE *file)
     int bytes = 0;
 
     bytes += fread (prof->nome, sizeof(char), 50, file);
-    bytes += fread(prof->dataBirth, sizeof(char), 12, file);
-    bytes += fread(prof->departamento, sizeof(char), 50, file);
+    bytes += fread (prof->dataBirth, sizeof(char), 12, file);
+    bytes += fread (prof->dpto, sizeof(char), 50, file);
 
     return bytes;
 }

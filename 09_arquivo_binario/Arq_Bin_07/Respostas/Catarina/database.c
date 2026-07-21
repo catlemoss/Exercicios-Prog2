@@ -12,6 +12,10 @@ struct Database
     Vector *profs;
 };
 
+/**
+ * @brief Cria um nova database.
+ * @return Um ponteiro para a estrutura database criada. Caso a alocação falhe, a função termina o programa.
+ */
 tDatabase *CriaDatabase()
 {
     tDatabase *base = calloc(1, sizeof(*base));
@@ -23,14 +27,22 @@ tDatabase *CriaDatabase()
     return base;
 }
 
+/**
+ * @brief Destroi uma database.
+ * @param db Ponteiro para a estrutura da database a ser destruída.
+ */
 void DestroiDatabase(tDatabase *db)
 {
-    VectorDestroy(db->alunos, (void (*)(DataType))DestroiAluno);
-    VectorDestroy(db->profs, (void (*)(DataType))DestroiProfessor);
+    VectorDestroy(db->alunos, DestroiAluno);
+    VectorDestroy(db->profs, DestroiProfessor);
 
     free(db);
 }
 
+/**
+ * @brief Lê uma database da entrada padrão.
+ * @param db Ponteiro para a estrutura da database a ser lida.
+ */
 void LeDatabase(tDatabase *db)
 {
     int qntAlunos = 0;
@@ -51,6 +63,10 @@ void LeDatabase(tDatabase *db)
     }
 }
 
+/**
+ * @brief Ordena uma database, primeiro os alunos e depois os professores, de acordo com o nome.
+ * @param db Ponteiro para a estrutura da database a ser ordenada.
+ */
 void OrdenaDatabase(tDatabase *db)
 {
     int qntAlunos = VectorSize(db->alunos);
@@ -86,6 +102,12 @@ void OrdenaDatabase(tDatabase *db)
     }
 }
 
+/**
+ * @brief Salva uma database em um arquivo binário.
+ * @param db Ponteiro para a estrutura da database a ser salva.
+ * @param file Ponteiro para o arquivo onde a database será salva.
+ * @return Um inteiro indicando o total de bytes salvos.
+ */
 int SalvarDatabase(tDatabase *db, FILE *file)
 {
     int bytes = 0;
@@ -110,6 +132,12 @@ int SalvarDatabase(tDatabase *db, FILE *file)
     return bytes;
 }
 
+/**
+ * @brief Carrega uma database de um arquivo binário.
+ * @param db Ponteiro para a estrutura da database a ser carregada.
+ * @param file Ponteiro para o arquivo de onde a database será carregada.
+ * @return Um inteiro indicando o total de bytes lidos.
+ */
 int CarregaDatabase(tDatabase *db, FILE *file)
 {
     int bytes = 0;
@@ -138,6 +166,10 @@ int CarregaDatabase(tDatabase *db, FILE *file)
     return bytes;
 }
 
+/**
+ * @brief Imprime uma database, primeiro os alunos e depois os professores. Apenas os nomes são impressos.
+ * @param db Ponteiro para a estrutura da database a ser impressa.
+ */
 void ImprimeDatabase(tDatabase *db)
 {
     printf("Alunos:\n");
