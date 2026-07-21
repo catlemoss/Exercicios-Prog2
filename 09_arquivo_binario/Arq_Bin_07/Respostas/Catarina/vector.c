@@ -59,7 +59,7 @@ void VectorPushBack(Vector *v, DataType val)
 */
 void VectorRemove(Vector *v, int i)
 {
-    for (int j = i; i < v->qnt -1-i; j++)
+    for (int j = i; i < v->qnt -1; j++)
     {
         v->dado[j] = v->dado[j+1];
     }
