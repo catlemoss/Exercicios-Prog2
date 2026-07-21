@@ -33,8 +33,8 @@ tDatabase *CriaDatabase()
  */
 void DestroiDatabase(tDatabase *db)
 {
-    VectorDestroy(db->alunos, DestroiAluno);
-    VectorDestroy(db->profs, DestroiProfessor);
+    VectorDestroy(db->alunos, (void(*)(DataType))DestroiAluno);
+    VectorDestroy(db->profs, (void(*)(DataType))DestroiProfessor);
 
     free(db);
 }
