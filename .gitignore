@@ -62,3 +62,4 @@ Resultado.csv
 # Executaveis compilados
 *.o
 *.out
+/prog
